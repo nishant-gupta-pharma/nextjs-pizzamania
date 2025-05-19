@@ -81,13 +81,10 @@ export default function Home({ data }) {
               Non Veg
             </button>
           </div>
-          {categoryArray.map((category) => {
+          {categoryArray.map((category, index) => {
             return (
-              <>
-                <div
-                  key={category}
-                  className="text-4xl mt-10 mb-3 uppercase font-bold text-black dark:text-white"
-                >
+              <div key={index}>
+                <div className="text-4xl mt-10 mb-3 uppercase font-bold text-black dark:text-white">
                   {category}
                 </div>
                 <hr className="text-black dark:text-white" />
@@ -106,7 +103,7 @@ export default function Home({ data }) {
                       })}
                   </div>
                 </div>
-              </>
+              </div>
             );
           })}
         </div>
