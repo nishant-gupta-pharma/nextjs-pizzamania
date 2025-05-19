@@ -123,6 +123,9 @@ export async function getStaticProps() {
       .catch((error) => error.message);
 
     data = await JSON.parse(JSON.stringify(pizzaData));
+    if (!Array.isArray(data)) {
+      console.error("Expected array but got:", data);
+    }
   } catch (error) {
     console.log(error.message);
   }
