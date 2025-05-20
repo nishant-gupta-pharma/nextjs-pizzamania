@@ -1,18 +1,18 @@
-import Image from "next/image"
-import { useTheme } from "next-themes"
-import Link from "next/link"
-import React, { useState, useContext, useEffect } from "react"
-import { CartContext } from "@/utils/ContextReducer"
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import Link from "next/link";
+import React, { useState, useContext, useEffect } from "react";
+import { CartContext } from "@/utils/ContextReducer";
 
 function Navbar() {
-  const [mounted, setMounted] = useState(false)
-  const { state } = useContext(CartContext)
-  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+  const { state, dispatch } = useContext(CartContext);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-  if (!mounted) return null
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
 
   return (
     <header className="text-white-100 sticky top-0 z-50 bg-gradient-to-r from-indigo-700 via-violet-700 to-orange-700 body-font">
@@ -102,8 +102,11 @@ function Navbar() {
               <Link
                 href={"/login"}
                 onClick={() => {
-                  localStorage.removeItem("token")
-                  localStorage.removeItem("userEmail")
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("userEmail");
+                  dispatch({
+                    type: "DROP",
+                  });
                 }}
                 className="text-lg text-white mr-5 cursor-pointer hover:text-gray-200 flex items-center"
               >
@@ -205,7 +208,7 @@ function Navbar() {
         </button>
       </div>
     </header>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { CartContext } from "@/utils/ContextReducer";
 
@@ -9,50 +9,62 @@ function Cart() {
   );
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
+  const [cancel, setCancel] = useState(false);
 
   const router = useRouter();
   const handleCheckOut = async () => {
-    let userEmail = localStorage.getItem("userEmail");
-    if (
-      localStorage.getItem("userEmail") === null ||
-      localStorage.getItem("userEmail") === undefined
-    ) {
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) {
       router.push("/login");
-    } else {
-      await fetch("api/ordersData", {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/ordersData", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           order_data: state,
           email: userEmail,
           order_date: new Date().toDateString(),
         }),
-      }).then((response) => {
-        if (response.status === 200) {
-          dispatch({ type: "DROP" });
-          setSuccess(true);
-        } else if (response.status === 400) {
-          setErrorMessage(
-            "If not logged in then, Please log in and try again."
-          );
-          setFail(true);
-        }
       });
+
+      if (res.status === 200) {
+        localStorage.setItem("paymentCart", JSON.stringify(state));
+        localStorage.setItem("deliveryPrice", JSON.stringify(deliveryPrice));
+        router.push("/payment");
+      } else {
+        setFail(true);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setFail(true);
     }
   };
+
   let totalPrice = state.reduce((total, food) => total + food.price, 0);
-  let deliveryPrice;
-  if (totalPrice <= 100) {
-    deliveryPrice = Math.round(totalPrice * 1);
-  } else if (totalPrice > 100 && totalPrice <= 300) {
-    deliveryPrice = Math.round((totalPrice * 0.5) / 2);
-  } else if (totalPrice > 300 && totalPrice <= 500) {
-    deliveryPrice = Math.round((totalPrice * 0.5) / 3);
-  } else {
-    deliveryPrice = null;
-  }
+  const deliveryPrice = useMemo(() => {
+    if (totalPrice <= 100) return Math.round(totalPrice * 1);
+    if (totalPrice <= 300) return Math.round((totalPrice * 0.5) / 2);
+    if (totalPrice <= 500) return Math.round((totalPrice * 0.5) / 3);
+    return 0;
+  }, [totalPrice]);
+
+  useEffect(() => {
+    const { status } = router.query;
+    console.log("status", status);
+
+    if (status === "success") {
+      dispatch({ type: "DROP" });
+      setSuccess(true);
+      router.replace("/cart");
+    } else if (status === "cancel") {
+      setCancel(true);
+      router.replace("/cart");
+    }
+  }, [dispatch, router, router.query]);
+
   return (
     <div className="bg-white dark:bg-black">
       {success && (
@@ -103,9 +115,9 @@ function Cart() {
           </div>
         </div>
       )}
-      {fail && (
+      {cancel && (
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          className="bg-red-100 border max-w-sm justify-self-center border-red-400 text-red-700 px-4 py-3 rounded relative"
           role="alert"
         >
           <div className="flex">
@@ -120,7 +132,55 @@ function Cart() {
             </div>
             <div className="flex flex-row justify-between">
               <div>
-                <p class="font-bold">Holy smokes !!</p>
+                <p class="font-bold justify-self-center">Oh no !!</p>
+                <p class="text-sm">Payment was canceled.</p>{" "}
+              </div>
+              <button
+                type="button"
+                class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
+                data-dismiss-target="#alert-3"
+                aria-label="Close"
+                onClick={() => setCancel(false)}
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  class="w-3 h-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {fail && (
+        <div
+          className="bg-red-100 border max-w-sm justify-self-center border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <div className="flex">
+            <div class="py-1">
+              <svg
+                class="fill-current h-6 w-6 text-red-500 mr-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+              </svg>
+            </div>
+            <div className="flex flex-row justify-between">
+              <div>
+                <p class="font-bold">Sorry !!</p>
                 <p class="text-sm">{errorMessage}</p>
               </div>
               <button
@@ -350,13 +410,13 @@ function Cart() {
                           {" "}
                           Cart Items: ₹{totalPrice}.00
                         </h1>
-                        {deliveryPrice != null ? (
+                        {deliveryPrice != 0 ? (
                           <p className="font-bold text-black dark:text-white">
                             +Delivery charge: {deliveryPrice}.00
                           </p>
                         ) : (
                           <p className="font-bold text-black dark:text-white">
-                            <i>*Congratulations! You got FREE delivery</i>x
+                            <i>*Congratulations! You got FREE delivery</i>
                           </p>
                         )}
                         <hr className="text-black dark:text-white" />
