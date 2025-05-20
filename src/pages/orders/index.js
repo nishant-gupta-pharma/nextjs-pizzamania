@@ -79,8 +79,11 @@ function Orders() {
           </div>
         </>
       ) : (
-        <div className="flex w-screen flex-col items-center justify-center h-screen">
-          <h1 className="text-4xl font-bold"> No previous Orders 😅</h1>
+        <div className="flex flex-col items-center justify-center h-screen bg-white dark:bg-black">
+          <h1 className="text-4xl font-bold dark:text-white text-black">
+            {" "}
+            No previous Orders 😅
+          </h1>
           {/* <p className="text-gray-600 mt-4">No previous Orders 😅</p> */}
           <Link
             href="/"
