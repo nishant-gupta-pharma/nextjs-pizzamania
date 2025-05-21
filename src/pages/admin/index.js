@@ -46,6 +46,15 @@ function Admin() {
     const result = await response.json();
     if (result.success) {
       alert("Food data created successfully");
+
+      setFoodData({
+        name: "",
+        foodCategory: "",
+        foodType: "",
+        price: "",
+        description: "",
+        img: "",
+      });
     } else {
       alert("Failed to create");
     }
@@ -162,7 +171,7 @@ function Admin() {
                       value={foodData.foodCategory}
                     >
                       <option value="">Select Food Category</option>
-                      <option value="Pizza">PIZZAS</option>
+                      <option value="Pizzas">PIZZAS</option>
                       <option value="SIDES & BEVERAGES">
                         SIDES & BEVERAGES
                       </option>
@@ -274,7 +283,7 @@ function Admin() {
                 </form>
               </div>
             ) : activeTab === "delete" ? (
-              <div className=" container w-full border-gradient max-w-2xl ">
+              <div className=" container w-full border-gradient max-w-xl ">
                 <div
                   style={{ maxHeight: "65vh" }}
                   className="bg-gray-100 dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-2xl px-8 pt-4 overflow-y-scroll scrollbar-hide"
@@ -293,7 +302,7 @@ function Admin() {
                           {item.category === "Pizzas"
                             ? "Pizza"
                             : item.category === "SIDES & BEVERAGES"
-                            ? "Sides"
+                            ? "Side / Beverage"
                             : item.category}
                           )
                         </span>

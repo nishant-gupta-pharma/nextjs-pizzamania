@@ -104,6 +104,9 @@ function Navbar() {
                 onClick={() => {
                   localStorage.removeItem("token");
                   localStorage.removeItem("userEmail");
+                  localStorage.removeItem("user");
+                  localStorage.removeItem("paymentCart");
+                  localStorage.removeItem("deliveryPrice");
                   dispatch({
                     type: "DROP",
                   });

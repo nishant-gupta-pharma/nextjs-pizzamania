@@ -47,13 +47,13 @@ function Card(props) {
   let finalPrice = qty * parseInt(data.price[size]);
   return (
     <div className="box">
-      <div className="w-80 rounded-lg overflow-hidden border-gradient">
+      <div className="w-85 rounded-lg overflow-hidden border-gradient">
         <div className="relative w-full h-80">
           <Image src={data.img} layout="fill" objectFit="cover" alt="pizza" />
         </div>
         <div className="p-4">
           <Link href={{ pathname: "/Item/[item]" }} as={`Item/${data["_id"]}`}>
-            <div className="font-bold mb-2 text-xl uppercase text-black dark:text-white">
+            <div className="font-semibold mb-2 text-lg uppercase text-black dark:text-white">
               {data.name}
             </div>
             <p className="short_description text-gray-700 dark:text-gray-400 text-base">
