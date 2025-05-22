@@ -34,10 +34,17 @@ export default async function handler(req, res) {
       const authToken = jwt.sign(data, jwtSecret);
       const isAdmin = await user.isAdmin;
       success = true;
-      res.json({ success: success, authToken: authToken, isAdmin: isAdmin });
+      res.json({
+        success: success,
+        authToken: authToken,
+        isAdmin: isAdmin,
+        name: user.name,
+      });
     } catch (error) {
-      console.log(error.message);
-      res.send("Server error");
+      console.error("Login error:", error.message);
+      res.status(500).json({ success, error: "Server error" });
     }
+  } else {
+    res.status(405).json({ success, error: "Method not allowed" });
   }
 }

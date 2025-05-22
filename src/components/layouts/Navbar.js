@@ -107,6 +107,7 @@ function Navbar() {
                   localStorage.removeItem("user");
                   localStorage.removeItem("paymentCart");
                   localStorage.removeItem("deliveryPrice");
+                  localStorage.removeItem("name");
                   dispatch({
                     type: "DROP",
                   });

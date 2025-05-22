@@ -40,6 +40,7 @@ function LogIn() {
       localStorage.setItem("token", res.authToken);
       localStorage.setItem("userEmail", credentials.email);
       localStorage.setItem("isAdmin", await JSON.parse(res.isAdmin));
+      localStorage.setItem("name", res.name);
 
       router.push("/");
     } else {
